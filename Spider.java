@@ -20,6 +20,12 @@ public class Spider {
 		//NOTES FROM PROJECT REQUIREMENTS:
 		//1. Given a starting URL, and the number of pages to be indexed, recursively fetch
 		//the required pages using a breadth-first startegy.
+		//
+		//2. BEFORE A PAGE IS FETCHED:
+		//	a. if url does not exist in index, go ahead and retrieve it
+		//	b. if url already exist but last modification date of the url is later than
+		//	that recorded in the index, go ahead and retrieve the url; otherwise ignore
+		//	c. handle cyclic links gracefully 
 	}
 
 	private void extractMetaData() throws ParserException {
