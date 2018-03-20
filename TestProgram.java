@@ -1,4 +1,4 @@
-
+import java.io.IOException;
 
 public class TestProgram {
 
@@ -7,6 +7,15 @@ public class TestProgram {
 	}
 	
 	public static void main (String[] args) {
-		System.out.println("Right now we don't do anything");
+		
+		try {
+			DataManager dm = new DataManager();
+		
+			dm.addEntry(DataManager.BODY_ID, "sham", "wow");
+			dm.printAll();
+			dm.finalize();
+		} catch (IOException e) {
+			System.err.println(e.toString());
+		}
 	}
 }
