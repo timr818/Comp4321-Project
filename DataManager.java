@@ -14,12 +14,6 @@
  * 4. The indexes must be able to support phrase search such as "HONG KONG" in page titles and page bodies
  */
 
-//TODO:
-//	Make the addentry not add duplicate entries
-//
-//	Make the add links work
-//
-//	Make it convert to wordIDs and docIDs :)
 
 import jdbm.RecordManager;
 import jdbm.RecordManagerFactory;
@@ -114,41 +108,99 @@ public class DataManager {
 	//keyword = the keyword from the page
 	//url = the url of the page
 	public void addEntry(String id, String key, String val) throws IOException {
-		HTree hash;
+		HTree hash = getHash(id);
+
+		int firstID, secondID;
+		
+		if (!id.equals(LINKS_ID)) {
+			firstID = getWordID(key);
+			secondID = getPageID(val);
+		} else {
+			firstID = getPageID(key);
+			secondID = getPageID(val);
+		}
+
+		Vector<Integer> existingValues;
 		if (id.equals(BODY_ID)) {
-			hash = pagebodyHash;
+			existingValues = getPages(firstID);
 		} else if (id.equals(TITLE_ID)) {
-			hash = pagetitleHash;
+			existingValues = getTitles(firstID);
 		} else {
-			hash = linksHash;
-		}
-
-		int wordID = getWordID(key);
-		if (wordID == -1) {
-			wordIDs.put(currWordID, key);
-			wordID = currWordID;
-			currWordID++;
-		}
-
-		int pageID = getPageID(val);
-		if (pageID == -1) {
-			pageIDs.put(currPageID, val);
-			pageID = currPageID;
-			currPageID++;
+			existingValues = getLinks(firstID);
 		}
 		
-		String content = (String) hash.get(wordID);
+		if (existingValues.contains(secondID)) {
+			return;
+		}
+		
+		String content = (String) hash.get(firstID);
 		if (content == null) {
-			content = Integer.toString(pageID);
+			content = Integer.toString(secondID);
 		} else {
-			content += ";" + Integer.toString(pageID);
+			content += ";" + Integer.toString(secondID);
 		}
 
-		hash.put(wordID, content);
-		
+		hash.put(firstID, content);
 	}
 
-	//returns -1 if the word has not been used, the wordID otherwise
+
+	private HTree getHash(String id) {
+		if (id.equals(BODY_ID)) {
+			return pagebodyHash;
+		} else if (id.equals(TITLE_ID)) {
+			return pagetitleHash;
+		} else if (id.equals(LINKS_ID)) {
+			return linksHash;
+		} else if (id.equals(WORDS_ID)) {
+			return wordIDs;
+		} else {
+			return pageIDs;
+		}
+	}
+	
+	//get the pages (pageIDs) that the given word appears on
+	public Vector<Integer> getPages(int wordID) throws IOException {
+		Vector<Integer> result = new Vector<Integer>();
+		HTree hash = getHash(BODY_ID);
+		String content = (String) hash.get(wordID);
+		String[] split = content.split(";");
+
+		for (String id : split) {
+			result.add(Integer.parseInt(id));
+		}
+
+		return result;
+	}
+	
+	//get the pages (pageIDs) that this word appears as the title on
+	private Vector<Integer> getTitles(int wordID) throws IOException {
+		Vector<Integer> result = new Vector<Integer>();
+		HTree hash = getHash(TITLE_ID);
+		String content = (String) hash.get(wordID);
+		String[] split = content.split(";");
+
+		for (String id : split) {
+			result.add(Integer.parseInt(id));
+		}
+
+		return result;
+	}
+
+	//get the pages that the given page links to
+	private Vector<Integer> getLinks(int pageID) throws IOException {
+		Vector<Integer> result = new Vector<Integer>();
+		HTree hash = getHash(LINKS_ID);
+		String content = (String) hash.get(pageID);
+		String[] split = content.split(";");
+
+		for (String id : split) {
+			result.add(Integer.parseInt(id));
+		}
+
+		return result;
+	}
+
+	//if the value already exist, it returns the id, otherwise creates the entry and returns the id it assigns to it.
 	private int getWordID(String word) throws IOException {
 		FastIterator iter = wordIDs.values();
 		FastIterator keys = wordIDs.keys();
@@ -162,10 +214,13 @@ public class DataManager {
 			}
 		}
 
-		return -1;
+		wordIDs.put(currWordID, word);
+		int t = currWordID;
+		currWordID++;
+
+		return t;
 	}
 	
-	//returns -1 if the url has not been used, pageID otherwise
 	private int getPageID(String url) throws IOException {
 		FastIterator vals = pageIDs.values();
 		FastIterator keys = pageIDs.keys();
@@ -179,9 +234,13 @@ public class DataManager {
 			}
 		}
 
-		return -1;
-	}
+		pageIDs.put(currPageID, url);
+		int t = currPageID;
+		currPageID++;
 
+		return t;
+	}
+	
 	//deletes an entry from the hashtable (id specifies which has table to delete from)
 	public void deleteEntry(String id, String keyword) throws IOException {
 		HTree hash;
@@ -218,7 +277,7 @@ public class DataManager {
 		System.out.println("PAGE LINKS INDEX");
 		Integer b;
 		while ((b = (Integer)iter3.next()) != null) {
-			System.out.println(b + " = " + pagetitleHash.get(b));
+			System.out.println(b + " = " + linksHash.get(b));
 		}
 	}
 
