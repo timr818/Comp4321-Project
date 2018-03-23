@@ -12,6 +12,8 @@ public class TestProgram {
 			DataManager dm = new DataManager();
 		
 			dm.addEntry(DataManager.BODY_ID, "sham", "wow");
+			dm.addEntry(DataManager.BODY_ID, "sham", "dunk");
+			dm.addEntry(DataManager.TITLE_ID, "smell", "me");
 			dm.printAll();
 			dm.finalize();
 		} catch (IOException e) {
