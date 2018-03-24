@@ -604,8 +604,4 @@ public class DataManager {
 			}
 		}
 	}
-
-	public void clean() {
-		recordManager.clean();
-	}
 }
