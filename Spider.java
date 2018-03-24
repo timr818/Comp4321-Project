@@ -12,9 +12,10 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.NodeClassFilter;
 
-import org.htmlparser.filters.TagNameFilter;	//testing
-import org.htmlparser.tags.TitleTag;	//testing
-import org.htmlparser.Node;	//testing
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.tags.TitleTag;
+import org.htmlparser.tags.BodyTag;
+import org.htmlparser.Node;
 
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
@@ -90,9 +91,9 @@ public class Spider {
 		
 
 		try {
+			this.extractMetaData(url);
 			this.extractLinks(url, db);
 			this.extractKeywords(url, db);
-			this.extractMetaData(url);
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -122,17 +123,6 @@ public class Spider {
 			System.out.println("\n\n");
 			System.out.println("PAGE VISITED SIZE: " + this.pagesVisited.size());
 			System.out.println("PAGE URL:          " + currentUrl);
-			System.out.println("\n\n");
-
-			/*
-			try{
-				//this.printWords();
-				//this.printLinks();
-			}
-			catch(Exception e){
-				System.out.println(e);
-			}
-			*/
 
 			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
@@ -170,11 +160,11 @@ public class Spider {
 			if (node instanceof TitleTag) {
 				TitleTag titleTag = (TitleTag) node;
 				String title = titleTag.getTitle();
-				System.out.println(title); 
+				System.out.println(title + "\n");
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e);
+			System.out.println(e);	//Need to send a blank title instead of an error
 		}
 		
 		return;
@@ -186,25 +176,39 @@ public class Spider {
 		//Here we will get all the keywords of the page and their freq
 		//and save them into the jdbm system
 		
-		//Extracts words/titles
+		//Extracts words inside body tag
 		Parser parser = new Parser(url);
+		parser.setEncoding("utf-8");
+
+		/*
+		TagNameFilter filter = new TagNameFilter("body");		
+		NodeList list = parser.parse(filter);
+		Node node = list.elementAt(0);
+		if (node instanceof BodyTag) {
+			BodyTag bodyTag = (BodyTag) node;
+			String body = bodyTag.getBody();
+			System.out.println(body + "\n");
+		}
+		*/
+
 		StringBean beanWord = new StringBean();
 		parser.visitAllNodesWith(beanWord);
+	
 		String contents = beanWord.getStrings();
 		StringTokenizer st = new StringTokenizer(contents);	
 
-		//Extracts Titles
-
-
 		while (st.hasMoreTokens()) {
 			String tokenNext = st.nextToken();
-			this.wordResults.add(tokenNext);
-			db.addEntry(DataManager.BODY_ID, tokenNext, url);		
+			String tokenValue = tokenNext.replaceAll("[^A-Za-z]", "").toLowerCase();
+			
+			if (!tokenValue.equals("")) {
+				this.wordResults.add(tokenValue);
+				//db.addEntry(DataManager.BODY_ID, tokenNext, url);		
 
-			//THIS IS WHERE YOU SEND DATA TO DATABASE!!
-			//System.out.println(tokenNext);
+				//THIS IS WHERE YOU SEND DATA TO DATABASE!!
+				System.out.println(tokenValue);
+			}
 		}
-
 		return;
 	}
 
