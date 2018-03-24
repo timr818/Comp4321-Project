@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import java.net.URL;
 
+import java.io.IOException;
 
 public class Spider {
 	
@@ -44,14 +45,6 @@ public class Spider {
 
 	}
 
-	//testing with manual input
-	public static void main(String [] args){
-		Spider testCrawl = new Spider();
-		
-		testCrawl.search("http://www.cse.ust.hk/");
-		return;
-	}
-
 
 	/**
 	* This performs all the work. It makes an HTTP request, checks the response, and then gathers
@@ -62,7 +55,7 @@ public class Spider {
 	* @return whether or not the crawl was successful
 	*/
 	//Sifts through URL pages and sends it to the database
-	public void crawl(String url) {
+	public void crawl(String url, DataManager db) {
 		//given the url, it will crawl it and recursively crawl on the pages that it links to
 		//
 		//NOTES FROM PROJECT REQUIREMENTS:
@@ -77,8 +70,8 @@ public class Spider {
 		
 
 		try {
-			this.extractLinks(url);
-			this.extractKeywords(url);
+			this.extractLinks(url, db);
+			this.extractKeywords(url, db);
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -90,7 +83,9 @@ public class Spider {
 
 
 	//Iteratively searches through a certain number of pages decided on my MAX_PAGES_TO_SEARCH variable
-	public void search(String url) {
+	public DataManager search(String url) throws IOException {
+		DataManager db = new DataManager();
+		
 		while(this.pagesVisited.size() < MAX_PAGES_TO_SEARCH) {
 			String currentUrl;
 			Spider leg = new Spider();
@@ -103,10 +98,10 @@ public class Spider {
 				currentUrl = this.nextUrl();
 			}
 
-			System.out.println("\n\n");
+			//System.out.println("\n\n");
 			System.out.println("PAGE VISITED SIZE: " + this.pagesVisited.size());
-			System.out.println("PAGE URL:          " + currentUrl);
-			System.out.println("\n\n");
+			//System.out.println("PAGE URL:          " + currentUrl);
+			//System.out.println("\n\n");
 
 			try{
 				//this.printWords();
@@ -116,9 +111,11 @@ public class Spider {
 				System.out.println(e);
 			}
 
-			leg.crawl(currentUrl); // Lots of stuff happening here. Look at the crawl method in Spider
+			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
 		}
+
+		return db;
 	}
 
 
@@ -144,7 +141,7 @@ public class Spider {
 
 
 	//Extracts all the words in a given URL, may need to sift through words to get rid of useless characters i.e. brackets, periods, etc
-	private void extractKeywords(String url) throws ParserException {
+	private void extractKeywords(String url, DataManager db) throws ParserException, IOException {
 		//Here we will get all the keywords of the page and their freq
 		//and save them into the jdbm system
 		
@@ -157,6 +154,7 @@ public class Spider {
 		while (st.hasMoreTokens()) {
 			String tokenNext = st.nextToken();
 			this.wordResults.add(tokenNext);
+			db.addEntry(DataManager.BODY_ID, tokenNext, url);			
 
 			//THIS IS WHERE YOU SEND DATA TO DATABASE!!
 			//System.out.println(tokenNext);
@@ -167,7 +165,7 @@ public class Spider {
 
 	
 	//Extracts all the links in a given URL
-	private void extractLinks(String url) throws ParserException {
+	private void extractLinks(String url, DataManager db) throws ParserException, IOException {
 		//Here we shall extract the links to other pages and record
 		//them into the database :)
 		
@@ -177,9 +175,10 @@ public class Spider {
 		URL[] urls = beanLinks.getLinks();
 		for (URL s : urls) {
 			this.linkResults.add(s.toString());
+			db.addEntry(DataManager.LINKS_ID, url, s.toString());
 
 			//prints out links in the page
-			System.out.println(s.toString());
+			//System.out.println(s.toString());
 		}
 
 		return;
