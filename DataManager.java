@@ -71,6 +71,22 @@ public class DataManager {
 		Initialize();
 	}
 
+	public static void main (String[] args) {
+		try {
+			DataManager dm = new DataManager();
+			dm.addEntry(DataManager.BODY_ID, "word1", "url1");
+			dm.addEntry(DataManager.BODY_ID, "word1", "url2");
+			dm.addEntry(DataManager.BODY_ID, "word1", "url1");
+			dm.addEntry(DataManager.BODY_ID, "word2", "url1");
+			dm.addEntry(DataManager.BODY_ID, "word3", "url1");
+			dm.addEntry(DataManager.BODY_ID, "word2", "url2");
+			dm.printAll();
+			dm.finalize();
+		} catch (IOException e) {
+			
+		}
+	}
+
 	private void Initialize() throws IOException {
 		FastIterator wordIter = wordIDs.keys();
 		FastIterator pageIter = pageIDs.keys();
@@ -169,33 +185,111 @@ public class DataManager {
 			existingValues = getLinks(firstID);
 		}
 		
-		if (existingValues.contains(secondID)) {
-			return;
-		}
-		
 		//get the current content and append the new entry to it
 		String content = (String) hash.get(firstID);
-		if (content == null) {
-			content = Integer.toString(secondID);
+
+		if (existingValues.contains(secondID)) {
+			if (id.equals(BODY_ID) || id.equals(TITLE_ID)) {
+				if (content.startsWith(Integer.toString(secondID) + ":")) {
+					int startFreq = content.indexOf(':');
+					int endFreq = content.indexOf(';');
+					int freq = 1;
+					String after = "";
+
+					if (startFreq < endFreq) {
+						freq = Integer.parseInt(content.substring(startFreq + 1, endFreq));
+						after = content.substring(content.indexOf(';'), content.length());
+					} else {
+						freq = Integer.parseInt(content.substring(startFreq + 1, content.length()));
+					}
+					
+					content = Integer.toString(secondID) + ":" + Integer.toString(freq + 1) + after;
+				} else {
+					int start = content.indexOf(";" + Integer.toString(secondID) + ":");
+
+					int startFreq = content.indexOf(':', start);
+					int endFreq = content.indexOf(';', start + 1);
+					int freq = 0;
+					String before = content.substring(0, start + 1);
+					String after = "";
+
+					if (startFreq < endFreq) {
+						freq = Integer.parseInt(content.substring(startFreq + 1, endFreq));
+						after = content.substring(endFreq, content.length());
+					} else {
+						freq = Integer.parseInt(content.substring(startFreq + 1, content.length()));
+					}
+					
+					content = before + Integer.toString(secondID) + ":" + Integer.toString(freq + 1) + after;
+				}
+
+				//update indexed hash
+				String a = (String) indexHash.get(secondID);
+				if (a.startsWith(Integer.toString(firstID) + ":")) {
+					int startFreq = a.indexOf(':');
+					int endFreq = a.indexOf(';');
+					int freq = 1;
+					String after = "";
+
+					if (startFreq < endFreq) {
+						freq = Integer.parseInt(a.substring(startFreq + 1, endFreq));
+						after = a.substring(a.indexOf(';'), a.length());
+					} else {
+						freq = Integer.parseInt(a.substring(startFreq + 1, a.length()));
+					}
+					
+					a = Integer.toString(firstID) + ":" + Integer.toString(freq + 1) + after;
+				} else {
+					int start = a.indexOf(";" + Integer.toString(firstID) + ":");
+					int startFreq = a.indexOf(':', start);
+					int endFreq = a.indexOf(';', start + 1);
+					int freq = 0;
+					String before = a.substring(0, start + 1);
+					String after = "";
+
+					if (startFreq < endFreq) {
+						freq = Integer.parseInt(a.substring(startFreq + 1, endFreq));
+						after = a.substring(endFreq, a.length());
+					} else {
+						freq = Integer.parseInt(a.substring(startFreq + 1, a.length()));
+					}
+					
+					a = before + Integer.toString(firstID) + ":" + Integer.toString(freq + 1) + after;
+				}
+
+				indexHash.put(secondID, a);
+			}
 		} else {
-			content += ";" + Integer.toString(secondID);
+			if (content == null) {
+				if (id.equals(BODY_ID) || id.equals(TITLE_ID))  {
+						content = Integer.toString(secondID) + ":1";
+				} else {
+						content = Integer.toString(secondID);
+				}
+			} else {
+				if (id.equals(BODY_ID) || id.equals(TITLE_ID))  {
+						content += ";" + Integer.toString(secondID) + ":1";
+				} else {
+						content += ";" + Integer.toString(secondID);
+				}
+			}
+
+			//add to the non-inverted index
+			if (id.equals(BODY_ID) || id.equals(TITLE_ID)) {
+				String a = (String) indexHash.get(secondID);
+				
+				if (a == null) {
+					a = Integer.toString(firstID) + ":1";
+				} else {
+					a += ";" + Integer.toString(firstID) + ":1";
+				}
+
+				indexHash.put(secondID, a);
+			}
 		}
 
 		//finally place into the actual database
 		hash.put(firstID, content);
-
-		//add to the non-inverted index
-		if (id.equals(BODY_ID) || id.equals(TITLE_ID)) {
-			String a = (String) indexHash.get(secondID);
-			
-			if (a == null) {
-				a = Integer.toString(firstID);
-			} else {
-				a += ";" + Integer.toString(firstID);
-			}
-
-			indexHash.put(secondID, a);
-		}
 	}
 
 	public void addMetaData(String url, String title, String modDate, int size) throws IOException {
@@ -234,7 +328,8 @@ public class DataManager {
 			String[] split = content.split(";");
 		
 			for (String id : split) {
-				result.add(Integer.parseInt(id));
+				String[] a = id.split(":");
+				result.add(Integer.parseInt(a[0]));
 			}
 		}
 
@@ -251,7 +346,8 @@ public class DataManager {
 			String[] split = content.split(";");
 		
 			for (String id : split) {
-				result.add(Integer.parseInt(id));
+				String[] a = id.split(":");
+				result.add(Integer.parseInt(a[0]));
 			}
 		}
 
@@ -393,7 +489,25 @@ public class DataManager {
 		if (content != null) {
 			String[] split = content.split(";");
 			for (int i = 0; i < split.length; i++) {
-				result.add(Integer.parseInt(split[i]));
+				String[] a = split[i].split(":");
+				result.add(Integer.parseInt(a[0]));
+			}
+		}
+
+		return result;
+	}
+
+	public Vector<String> getKeywordsAndFreq(int pageID) throws IOException {
+		HTree hash = getHash(INDEX_ID);
+		String content = (String) hash.get(pageID);
+		Vector<String> result = new Vector<String>();
+
+		if (content != null) {
+			String[] split = content.split(";");
+			for (int i = 0; i < split.length; i++) {
+				String[] a = split[i].split(":");
+				content = getWordFromID(Integer.parseInt(a[0])) + " " + a[1];
+				result.add(content);
 			}
 		}
 
@@ -491,11 +605,7 @@ public class DataManager {
 		}
 	}
 
-	public static void main (String[] args) {
-		try{
-		DataManager d = new DataManager();
-		} catch (IOException e) {
-			System.err.println(e.toString());
-		}
+	public void clean() {
+		recordManager.clean();
 	}
 }
