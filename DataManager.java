@@ -44,8 +44,11 @@ public class DataManager {
 	//hash table for links that have the pageID and the pageIDs that that page links to
 	private HTree linksHash;
 
-	//These are the conversions for word -> wordID and URL -> pageIDs
+	//These are the conversions for word -> wordID
 	private HTree wordIDs;
+
+	//Conversion for pageIDs -> urls (also stores metadata)
+	//format: pageID -> url;pagetitle;last modified date;page size
 	private HTree pageIDs;
 	
 	//The next ID number to give to the next unknown word or url
@@ -59,6 +62,31 @@ public class DataManager {
 		createIndexTable(LINKS_ID);
 		createIndexTable(WORDS_ID);
 		createIndexTable(PAGES_ID);
+
+		Initialize();
+	}
+
+	private void Initialize() throws IOException {
+		FastIterator wordIter = wordIDs.keys();
+		FastIterator pageIter = pageIDs.keys();
+		
+		Integer a;
+		Integer max = 0;
+		while((a = (Integer) wordIter.next()) != null) {
+			if (a > max) {
+				max = a;
+			}
+		}
+		currWordID = max;
+
+		Integer b;
+		max = 0;
+		while((b = (Integer) pageIter.next()) != null) {
+			if (b > max) {
+				max = b;
+			}
+		}
+		currPageID = max;
 	}
 
 	//initializes the hash tables
@@ -120,6 +148,7 @@ public class DataManager {
 			secondID = getPageID(val);
 		}
 
+		
 		Vector<Integer> existingValues;
 		if (id.equals(BODY_ID)) {
 			existingValues = getPages(firstID);
@@ -143,6 +172,16 @@ public class DataManager {
 		hash.put(firstID, content);
 	}
 
+	public void addMetaData(String url, String title, String modDate, int size) throws IOException {
+		int pageID = getPageID(url);		
+		HTree hash = getHash(PAGES_ID);
+		String content = (String) hash.get(PAGES_ID);
+		
+		content = url + ";" + title + ";" + modDate + ";" + size;
+		
+		hash.put(pageID, content);
+	}
+
 
 	private HTree getHash(String id) {
 		if (id.equals(BODY_ID)) {
@@ -163,10 +202,13 @@ public class DataManager {
 		Vector<Integer> result = new Vector<Integer>();
 		HTree hash = getHash(BODY_ID);
 		String content = (String) hash.get(wordID);
-		String[] split = content.split(";");
 
-		for (String id : split) {
-			result.add(Integer.parseInt(id));
+		if (content != null) {
+			String[] split = content.split(";");
+		
+			for (String id : split) {
+				result.add(Integer.parseInt(id));
+			}
 		}
 
 		return result;
@@ -177,10 +219,13 @@ public class DataManager {
 		Vector<Integer> result = new Vector<Integer>();
 		HTree hash = getHash(TITLE_ID);
 		String content = (String) hash.get(wordID);
-		String[] split = content.split(";");
-
-		for (String id : split) {
-			result.add(Integer.parseInt(id));
+		
+		if (content != null) {
+			String[] split = content.split(";");
+		
+			for (String id : split) {
+				result.add(Integer.parseInt(id));
+			}
 		}
 
 		return result;
@@ -191,10 +236,13 @@ public class DataManager {
 		Vector<Integer> result = new Vector<Integer>();
 		HTree hash = getHash(LINKS_ID);
 		String content = (String) hash.get(pageID);
-		String[] split = content.split(";");
-
-		for (String id : split) {
-			result.add(Integer.parseInt(id));
+		
+		if (content != null) {
+			String[] split = content.split(";");
+		
+			for (String id : split) {
+				result.add(Integer.parseInt(id));
+			}
 		}
 
 		return result;
@@ -228,8 +276,11 @@ public class DataManager {
 		String curr;
 		int pageID;
 		while((curr = (String) vals.next()) != null) {
+			String[] split = curr.split(";");
+			String currURL = split[0];
+
 			pageID = (int) keys.next();
-			if (curr.equals(url)) {
+			if (currURL.equals(url)) {
 				return pageID;
 			}
 		}
@@ -259,7 +310,9 @@ public class DataManager {
 		FastIterator iter1 = pagebodyHash.keys();
 		FastIterator iter2 = pagetitleHash.keys();
 		FastIterator iter3 = linksHash.keys();
-		
+		FastIterator iter4 = wordIDs.keys();
+		FastIterator iter5 = pageIDs.keys();		
+
 		System.out.println("PAGE BODY INDEX");
 		Integer key;
 		while((key=(Integer)iter1.next()) != null) {
@@ -278,6 +331,20 @@ public class DataManager {
 		Integer b;
 		while ((b = (Integer)iter3.next()) != null) {
 			System.out.println(b + " = " + linksHash.get(b));
+		}
+
+		System.out.println("");
+		System.out.println("WORDID LOOKUP");
+		Integer wordID;
+		while((wordID = (Integer)iter4.next()) != null) {
+			System.out.println(wordID + " = " + wordIDs.get(wordID));
+		}
+
+		System.out.println("");
+		System.out.println("PAGEID LOOKUP");
+		Integer pageID;
+		while((pageID = (Integer)iter5.next()) != null) {
+			System.out.println(pageID + " = " + pageIDs.get(pageID));
 		}
 	}
 
