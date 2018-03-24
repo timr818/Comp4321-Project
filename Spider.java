@@ -6,15 +6,21 @@
 //to run:		java -cp lib/htmlparser.jar:. Spider
 
 import org.htmlparser.beans.StringBean;
+import org.htmlparser.beans.LinkBean;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.NodeClassFilter;
+
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.tags.TitleTag;
+import org.htmlparser.tags.BodyTag;
+import org.htmlparser.Node;
+
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
-import org.htmlparser.beans.LinkBean;
-import org.htmlparser.Parser;
 import org.htmlparser.util.ParserException;
+import org.htmlparser.Parser;
 
 import java.util.StringTokenizer;
 import java.util.HashSet;
@@ -36,14 +42,29 @@ public class Spider {
 	private Vector<String> wordResults = new Vector<String>();
 
 	//information to be used by the recursive function
-    private Set<String> pagesVisited = new HashSet<String>();
-    private List<String> pagesToVisit = new LinkedList<String>();
-	private static final int MAX_PAGES_TO_SEARCH = 8;
+	private Set<String> pagesVisited = new HashSet<String>();
+	private List<String> pagesToVisit = new LinkedList<String>();
+	private static final int MAX_PAGES_TO_SEARCH = 30;
 
 	//Constructor
 	Spider() {
 
 	}
+	
+
+	//testing with manual input
+	public static void main(String [] args){
+		Spider testCrawl = new Spider();
+		try {
+			testCrawl.search("http://www.cse.ust.hk/");
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		return;
+	}
+
+
 
 
 	/**
@@ -70,6 +91,7 @@ public class Spider {
 		
 
 		try {
+			this.extractMetaData(url);
 			this.extractLinks(url, db);
 			this.extractKeywords(url, db);
 		}
@@ -98,18 +120,9 @@ public class Spider {
 				currentUrl = this.nextUrl();
 			}
 
-			//System.out.println("\n\n");
+			System.out.println("\n\n");
 			System.out.println("PAGE VISITED SIZE: " + this.pagesVisited.size());
-			//System.out.println("PAGE URL:          " + currentUrl);
-			//System.out.println("\n\n");
-
-			try{
-				//this.printWords();
-				//this.printLinks();
-			}
-			catch(Exception e){
-				System.out.println(e);
-			}
+			System.out.println("PAGE URL:          " + currentUrl);
 
 			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
@@ -130,13 +143,31 @@ public class Spider {
 		return nextUrl;
 	}
 
-    public List<String> getLinks() {
-    	return this.linkResults;
-    }
+	public List<String> getLinks() {
+    		return this.linkResults;
+	}
 
 
-	private void extractMetaData() throws ParserException {
+	private void extractMetaData(String url) throws ParserException {
 		//Here we will gather data such as modified date, page size
+		Parser parser = new Parser(url);
+		TagNameFilter filter = new TagNameFilter("title");
+		
+		try {
+			NodeList list = parser.parse(filter);
+			Node node = list.elementAt(0);
+			
+			if (node instanceof TitleTag) {
+				TitleTag titleTag = (TitleTag) node;
+				String title = titleTag.getTitle();
+				System.out.println(title + "\n");
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);	//Need to send a blank title instead of an error
+		}
+		
+		return;
 	}
 
 
@@ -145,21 +176,39 @@ public class Spider {
 		//Here we will get all the keywords of the page and their freq
 		//and save them into the jdbm system
 		
-		//Extracts words/titles
+		//Extracts words inside body tag
+		Parser parser = new Parser(url);
+		parser.setEncoding("utf-8");
+
+		/*
+		TagNameFilter filter = new TagNameFilter("body");		
+		NodeList list = parser.parse(filter);
+		Node node = list.elementAt(0);
+		if (node instanceof BodyTag) {
+			BodyTag bodyTag = (BodyTag) node;
+			String body = bodyTag.getBody();
+			System.out.println(body + "\n");
+		}
+		*/
+
 		StringBean beanWord = new StringBean();
-		beanWord.setURL(url);
-		beanWord.setLinks(false);
+		parser.visitAllNodesWith(beanWord);
+	
 		String contents = beanWord.getStrings();
-		StringTokenizer st = new StringTokenizer(contents);
+		StringTokenizer st = new StringTokenizer(contents);	
+
 		while (st.hasMoreTokens()) {
 			String tokenNext = st.nextToken();
-			this.wordResults.add(tokenNext);
-			db.addEntry(DataManager.BODY_ID, tokenNext, url);			
+			String tokenValue = tokenNext.replaceAll("[^A-Za-z]", "").toLowerCase();
+			
+			if (!tokenValue.equals("")) {
+				this.wordResults.add(tokenValue);
+				//db.addEntry(DataManager.BODY_ID, tokenNext, url);		
 
-			//THIS IS WHERE YOU SEND DATA TO DATABASE!!
-			//System.out.println(tokenNext);
+				//THIS IS WHERE YOU SEND DATA TO DATABASE!!
+				System.out.println(tokenValue);
+			}
 		}
-
 		return;
 	}
 
@@ -179,25 +228,6 @@ public class Spider {
 
 			//prints out links in the page
 			//System.out.println(s.toString());
-		}
-
-		return;
-	}
-
-	//NEED TO FIX, MAYBE?
-	public void printWords() throws ParserException{
-		for (Object s : this.wordResults) {
-			System.out.println(s);
-		}
-
-		return;
-	}
-
-
-	//Prints all links in a given page, primarily used for testing
-	public void printLinks() throws ParserException{
-		for (Object s : pagesToVisit) {
-			System.out.println(s);
 		}
 
 		return;
