@@ -38,7 +38,7 @@ public class Spider {
 	//information to be used by the recursive function
     private Set<String> pagesVisited = new HashSet<String>();
     private List<String> pagesToVisit = new LinkedList<String>();
-	private static final int MAX_PAGES_TO_SEARCH = 30;
+	private static final int MAX_PAGES_TO_SEARCH = 8;
 
 	//Constructor
 	Spider() {

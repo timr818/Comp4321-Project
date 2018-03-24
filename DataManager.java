@@ -26,6 +26,7 @@ import java.io.IOException;
 public class DataManager {
 
 	public static final String MANAGER_ID = "recman";
+	public static final String INDEX_ID = "index";
 	public static final String BODY_ID = "bodyid";
 	public static final String TITLE_ID = "titleid";
 	public static final String LINKS_ID = "links";
@@ -35,6 +36,9 @@ public class DataManager {
 
 	private RecordManager recordManager;
 	
+	//Non-Inverted hash for pageID -> wordID
+	private HTree indexHash;
+
 	//Inverted index for the keywords in the pagebody of the pages
 	private HTree pagebodyHash;
 
@@ -62,6 +66,7 @@ public class DataManager {
 		createIndexTable(LINKS_ID);
 		createIndexTable(WORDS_ID);
 		createIndexTable(PAGES_ID);
+		createIndexTable(INDEX_ID);
 
 		Initialize();
 	}
@@ -102,8 +107,10 @@ public class DataManager {
 				linksHash = HTree.load(recordManager, hashid);
 			} else if (id.equals(WORDS_ID)) {
 				wordIDs = HTree.load(recordManager, hashid);
-			} else {
+			} else if (id.equals(PAGES_ID)) {
 				pageIDs = HTree.load(recordManager, hashid);
+			} else {
+				indexHash = HTree.load(recordManager, hashid);
 			}
 		} else {
 			if (id.equals(BODY_ID)) {
@@ -118,9 +125,12 @@ public class DataManager {
 			} else if (id.equals(WORDS_ID)) {
 				wordIDs = HTree.createInstance(recordManager);
 				recordManager.setNamedObject(id, wordIDs.getRecid());
-			} else {
+			} else  if (id.equals(PAGES_ID)) {
 				pageIDs = HTree.createInstance(recordManager);
 				recordManager.setNamedObject(id, pageIDs.getRecid());
+			} else {
+				indexHash = HTree.createInstance(recordManager);
+				recordManager.setNamedObject(id, indexHash.getRecid());
 			}
 		}
 	}
@@ -140,6 +150,7 @@ public class DataManager {
 
 		int firstID, secondID;
 		
+		//get the corresponding ids to the data
 		if (!id.equals(LINKS_ID)) {
 			firstID = getWordID(key);
 			secondID = getPageID(val);
@@ -148,7 +159,7 @@ public class DataManager {
 			secondID = getPageID(val);
 		}
 
-		
+		//get the exisiting values to avoid duplicates
 		Vector<Integer> existingValues;
 		if (id.equals(BODY_ID)) {
 			existingValues = getPages(firstID);
@@ -162,6 +173,7 @@ public class DataManager {
 			return;
 		}
 		
+		//get the current content and append the new entry to it
 		String content = (String) hash.get(firstID);
 		if (content == null) {
 			content = Integer.toString(secondID);
@@ -169,7 +181,21 @@ public class DataManager {
 			content += ";" + Integer.toString(secondID);
 		}
 
+		//finally place into the actual database
 		hash.put(firstID, content);
+
+		//add to the non-inverted index
+		if (id.equals(BODY_ID) || id.equals(TITLE_ID)) {
+			String a = (String) indexHash.get(secondID);
+			
+			if (a == null) {
+				a = Integer.toString(firstID);
+			} else {
+				a += ";" + Integer.toString(firstID);
+			}
+
+			indexHash.put(secondID, a);
+		}
 	}
 
 	public void addMetaData(String url, String title, String modDate, int size) throws IOException {
@@ -182,7 +208,6 @@ public class DataManager {
 		hash.put(pageID, content);
 	}
 
-
 	private HTree getHash(String id) {
 		if (id.equals(BODY_ID)) {
 			return pagebodyHash;
@@ -192,8 +217,10 @@ public class DataManager {
 			return linksHash;
 		} else if (id.equals(WORDS_ID)) {
 			return wordIDs;
-		} else {
+		} else if (id.equals(PAGES_ID)) {
 			return pageIDs;
+		} else {
+			return indexHash;
 		}
 	}
 	
@@ -306,45 +333,159 @@ public class DataManager {
 		hash.remove(keyword);
 	} 
 
+	public String getPageTitle(int pageID) throws IOException {
+		HTree lookup = getHash(PAGES_ID);
+		String content = (String) lookup.get(pageID);
+		if (content != null) {
+			String[] split = content.split(";");
+			if (split.length > 1) {
+				return split[1];
+			}
+		}
+	
+		return "[ title is missing ]";
+	}
+	
+	public String getModifiedDate(int pageID) throws IOException {
+		HTree lookup = getHash(PAGES_ID);
+		String content = (String) lookup.get(pageID);
+		if (content != null) {
+			String[] split = content.split(";");
+			if (split.length > 2) {
+				return split[2];
+			}
+		}
+	
+		return "[ modified date is missing ]";
+	}
+
+	public String getURL(int pageID) throws IOException {
+		HTree lookup = getHash(PAGES_ID);
+		String content = (String) lookup.get(pageID);
+		if (content != null) {
+			String[] split = content.split(";");
+			if (split.length > 0) {
+				return split[0];
+			}
+		}
+
+		return "[ url misssing ]";
+	}
+	
+	public String getPageSize(int pageID) throws IOException {
+		HTree lookup = getHash(PAGES_ID);
+		String content = (String) lookup.get(pageID);
+		if (content != null) {
+			String[] split = content.split(";");
+			if (split.length > 3) {
+				return split[3];
+			}
+		}
+	
+		return "[ page size is missing ]";
+	}
+
+	public Vector<Integer> getKeywords(int pageID) throws IOException {
+		HTree hash = getHash();
+		String content = (String) hash.get(pageID);
+		Vector<Integer> result = new Vector<int>();
+
+		String[] split = content.split(";");
+		for (int i = 0; i < split.length; i++) {
+			result.add(Integer.parseInt(split[i]));
+		}
+
+		return result;
+	}
+
+	public String getWordFromID(int wordID) throws IOException {
+		HTree hash = getHash(WORDS_ID);
+		String content = (String) hash.get(wordID);
+		if (content == null) {
+			return "[ word not found ]";
+		} else {
+			return content;
+		}
+	}
+
 	public void printAll() throws IOException {
 		FastIterator iter1 = pagebodyHash.keys();
 		FastIterator iter2 = pagetitleHash.keys();
 		FastIterator iter3 = linksHash.keys();
 		FastIterator iter4 = wordIDs.keys();
 		FastIterator iter5 = pageIDs.keys();		
+		FastIterator iter6 = indexHash.keys();
+
+		int maxPrint = 10;
 
 		System.out.println("PAGE BODY INDEX");
 		Integer key;
+		int size = 0;
 		while((key=(Integer)iter1.next()) != null) {
+			size++;
 			System.out.println(key + " = " + pagebodyHash.get(key));
+			if (size >= maxPrint) {
+				break;
+			}
 		}
 		
 		System.out.println("");
 		System.out.println("PAGE TITLE INDEX");
 		Integer a;
+		size = 0;
 		while((a = (Integer)iter2.next()) != null) {
+			size++;
 			System.out.println(a + " = " + pagetitleHash.get(a));
+			if (size >= maxPrint) {
+				break;
+			}
 		}
 
+		size = 0;
 		System.out.println("");
 		System.out.println("PAGE LINKS INDEX");
 		Integer b;
 		while ((b = (Integer)iter3.next()) != null) {
+			size++;
 			System.out.println(b + " = " + linksHash.get(b));
+			if (size >= maxPrint) {
+				break;
+			}
 		}
 
 		System.out.println("");
 		System.out.println("WORDID LOOKUP");
 		Integer wordID;
+		size = 0;
 		while((wordID = (Integer)iter4.next()) != null) {
 			System.out.println(wordID + " = " + wordIDs.get(wordID));
+			size++;
+			if (size >= maxPrint) {
+				break;
+			}
 		}
-
 		System.out.println("");
 		System.out.println("PAGEID LOOKUP");
 		Integer pageID;
+		size = 0;
 		while((pageID = (Integer)iter5.next()) != null) {
 			System.out.println(pageID + " = " + pageIDs.get(pageID));
+			size++;
+			if (size >= maxPrint) {
+				break;
+			}
+		}
+
+		System.out.println("");
+		System.out.println("NON-INVERTED INDEX");
+		Integer p;
+		size = 0;
+		while ((p = (Integer)iter6.next()) != null) {
+			System.out.println(p + " = " + indexHash.get(p));
+			size++;
+			if (size >= maxPrint) {
+				break;
+			}
 		}
 	}
 
