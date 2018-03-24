@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Vector;
 
 public class TestProgram {
 
@@ -22,11 +23,18 @@ public class TestProgram {
 				bw.write(dm.getPageTitle(i) + "\n");
 				bw.write(dm.getURL(i) + "\n");
 				bw.write(dm.getModifiedDate(i) + ", " + dm.getPageSize(i) + "\n");
-				Vector<int> wordIDs = dm.getKeywords(i);
+				
+				//print keywords
+				Vector<Integer> wordIDs = dm.getKeywords(i);
 				for (int wID : wordIDs) {
 					bw.write("; " + dm.getWordFromID(wID));
 				}
-				bw.write("\n");
+			
+				//print links
+				Vector<Integer> pageIDs = dm.getLinks(i);
+				for (int pID : pageIDs) {
+					bw.write(dm.getURL(pID) + "\n");
+				}
 				bw.write("\n---------------\n\n");
 			}
 

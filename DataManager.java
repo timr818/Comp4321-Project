@@ -259,7 +259,7 @@ public class DataManager {
 	}
 
 	//get the pages that the given page links to
-	private Vector<Integer> getLinks(int pageID) throws IOException {
+	public Vector<Integer> getLinks(int pageID) throws IOException {
 		Vector<Integer> result = new Vector<Integer>();
 		HTree hash = getHash(LINKS_ID);
 		String content = (String) hash.get(pageID);
@@ -386,13 +386,15 @@ public class DataManager {
 	}
 
 	public Vector<Integer> getKeywords(int pageID) throws IOException {
-		HTree hash = getHash();
+		HTree hash = getHash(INDEX_ID);
 		String content = (String) hash.get(pageID);
-		Vector<Integer> result = new Vector<int>();
+		Vector<Integer> result = new Vector<Integer>();
 
-		String[] split = content.split(";");
-		for (int i = 0; i < split.length; i++) {
-			result.add(Integer.parseInt(split[i]));
+		if (content != null) {
+			String[] split = content.split(";");
+			for (int i = 0; i < split.length; i++) {
+				result.add(Integer.parseInt(split[i]));
+			}
 		}
 
 		return result;
