@@ -59,7 +59,7 @@ public class Spider {
 			testCrawl.search("http://www.cse.ust.hk/");
 		}
 		catch(Exception e) {
-			System.out.println(e);
+			System.out.println("1 " + e);
 		}
 		return;
 	}
@@ -91,12 +91,12 @@ public class Spider {
 		
 
 		try {
-			this.extractMetaData(url);
+			this.extractMetaData(url, db);
 			this.extractLinks(url, db);
 			this.extractKeywords(url, db);
 		}
 		catch(Exception e) {
-			System.out.println(e);
+			System.out.println("2 " + e);
 		}
 
 
@@ -148,23 +148,29 @@ public class Spider {
 	}
 
 
-	private void extractMetaData(String url) throws ParserException {
+	private void extractMetaData(String url, DataManager dm) throws ParserException, IOException {
 		//Here we will gather data such as modified date, page size
 		Parser parser = new Parser(url);
 		TagNameFilter filter = new TagNameFilter("title");
 		
+		String title = "";
+		String modDate = "";
+		int pageSize = 0;
+
 		try {
 			NodeList list = parser.parse(filter);
 			Node node = list.elementAt(0);
 			
 			if (node instanceof TitleTag) {
 				TitleTag titleTag = (TitleTag) node;
-				String title = titleTag.getTitle();
+				title = titleTag.getTitle();
 				//System.out.println(title + "\n");
 			}
+
+			dm.addMetaData(url, title, modDate, pageSize);
 		}
 		catch(Exception e) {
-			System.out.println(e);	//Need to send a blank title instead of an error
+			System.out.println("3 " + e);	//Need to send a blank title instead of an error
 		}
 		
 		return;

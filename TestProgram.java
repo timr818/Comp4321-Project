@@ -21,12 +21,16 @@ public class TestProgram {
 			for (int i = 0; i < 30; i++) {
 				bw.write(dm.getPageTitle(i) + "\n");
 				bw.write(dm.getURL(i) + "\n");
-				bw.write(dm.getModifiedDate(i) + ", " + dm.getPageSize(i) + "\n");
+				bw.write(dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
 				
 				//print keywords
-				Vector<Integer> wordIDs = dm.getKeywords(i);
-				for (int wID : wordIDs) {
-					bw.write("; " + dm.getWordFromID(wID));
+				Vector<String> words = dm.getKeywordsAndFreq(i);
+				for (int j = 0; j < words.size(); j++) {
+					if (j != 0) {
+						bw.write("; " + words.get(j));
+					} else {
+						bw.write(words.get(j));
+					}
 				}
 			
 				//print links
