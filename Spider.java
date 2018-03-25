@@ -120,9 +120,9 @@ public class Spider {
 				currentUrl = this.nextUrl();
 			}
 
-			System.out.println("\n\n");
+			//System.out.println("\n\n");
 			System.out.println("PAGE VISITED SIZE: " + this.pagesVisited.size());
-			System.out.println("PAGE URL:          " + currentUrl);
+			//System.out.println("PAGE URL:          " + currentUrl);
 
 			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
@@ -160,7 +160,7 @@ public class Spider {
 			if (node instanceof TitleTag) {
 				TitleTag titleTag = (TitleTag) node;
 				String title = titleTag.getTitle();
-				System.out.println(title + "\n");
+				//System.out.println(title + "\n");
 			}
 		}
 		catch(Exception e) {
@@ -203,10 +203,10 @@ public class Spider {
 			
 			if (!tokenValue.equals("")) {
 				this.wordResults.add(tokenValue);
-				//db.addEntry(DataManager.BODY_ID, tokenNext, url);		
+				db.addEntry(DataManager.BODY_ID, tokenNext, url);		
 
 				//THIS IS WHERE YOU SEND DATA TO DATABASE!!
-				System.out.println(tokenValue);
+				//System.out.println(tokenValue);
 			}
 		}
 		return;
