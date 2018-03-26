@@ -32,8 +32,12 @@ import java.util.Vector;
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Spider {
+
+	private static final String STOP_WORD_DIC_FILE = "stopwords.txt";
 	
 	private String url;
 
@@ -46,9 +50,24 @@ public class Spider {
 	private List<String> pagesToVisit = new LinkedList<String>();
 	private static final int MAX_PAGES_TO_SEARCH = 30;
 
+	//for stop wording
+	private Set<String> stopWords = new HashSet<String>();
+
 	//Constructor
 	Spider() {
+		initializeStopwords(STOP_WORD_DIC_FILE);
+	}
 
+	private void initializeStopwords(String file) {
+		try {
+			List<String> w = Files.readAllLines(Paths.get(file));
+
+			for (String a : w) {
+				stopWords.add(a);
+			}
+		} catch (Exception e) {
+			System.out.println("0 " + e);
+		}
 	}
 	
 
@@ -205,8 +224,8 @@ public class Spider {
 			String[] tokenSplit = tokenNext.split("[^A-Za-z]");			
 			
 			for(int i = 0; i < tokenSplit.length; i++) {
-				String tokenValue = tokenSplit[i].replaceAll("[^A-Za-z]", "").toLowerCase();			
-				if (!tokenValue.equals("")) {
+				String tokenValue = tokenSplit[i].replaceAll("[^A-Za-z]", "").toLowerCase();	
+				if (!tokenValue.equals("") && !stopWords.contains(tokenValue)) {
 					this.wordResults.add(tokenValue);
 					db.addEntry(DataManager.BODY_ID, tokenValue, url);	//sends data to database		
 				
