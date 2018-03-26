@@ -17,12 +17,18 @@ public class TestProgram {
 
 			FileWriter fw = new FileWriter(FILE_NAME);
 			BufferedWriter bw = new BufferedWriter(fw);
-		
+
 			for (int i = 0; i < 30; i++) {
 				bw.write(dm.getPageTitle(i) + "\n");
 				bw.write(dm.getURL(i) + "\n");
-				bw.write(dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
 				
+				if(dm.getPageSize(i).equals("0")){
+					bw.write(dm.getModifiedDate(i) + ", page size: unknown\n");
+				}
+				else {
+					bw.write(dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
+				}
+
 				//print keywords
 				Vector<String> words = dm.getKeywordsAndFreq(i);
 				for (int j = 0; j < words.size(); j++) {
@@ -32,7 +38,8 @@ public class TestProgram {
 						bw.write(words.get(j));
 					}
 				}
-			
+				
+				System.out.print("\n");	
 				//print links
 				Vector<Integer> pageIDs = dm.getLinks(i);
 				for (int pID : pageIDs) {
@@ -41,7 +48,7 @@ public class TestProgram {
 				bw.write("\n---------------\n\n");
 			}
 
-			dm.printAll();
+			//dm.printAll();
 			
 			bw.close();
 			fw.close();

@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import java.net.URL;
-
+import java.net.HttpURLConnection;
 import java.io.IOException;
 
 public class Spider {
@@ -119,11 +119,7 @@ public class Spider {
 			else {
 				currentUrl = this.nextUrl();
 			}
-
-			//System.out.println("\n\n");
-			System.out.println("PAGE VISITED SIZE: " + this.pagesVisited.size());
-			//System.out.println("PAGE URL:          " + currentUrl);
-
+			
 			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
 		}
@@ -155,7 +151,9 @@ public class Spider {
 		
 		String title = "";
 		String modDate = "";
-		int pageSize = 0;
+
+		HttpURLConnection content = (HttpURLConnection) new URL(url).openConnection();
+		//System.out.println(content.getContentLength());
 
 		try {
 			NodeList list = parser.parse(filter);
@@ -166,13 +164,21 @@ public class Spider {
 				title = titleTag.getTitle();
 				//System.out.println(title + "\n");
 			}
-
-			dm.addMetaData(url, title, modDate, pageSize);
+			
+			if(content.getContentLength() < 0){
+                        	dm.addMetaData(url, title, modDate, 0);
+                	}
+			else {
+				dm.addMetaData(url, title, modDate, content.getContentLength());
+			}
 		}
 		catch(Exception e) {
 			System.out.println("3 " + e);	//Need to send a blank title instead of an error
 		}
-		
+
+		//disconnects url connection to free sockets
+		content.disconnect();
+
 		return;
 	}
 
@@ -186,17 +192,6 @@ public class Spider {
 		Parser parser = new Parser(url);
 		parser.setEncoding("utf-8");
 
-		/*
-		TagNameFilter filter = new TagNameFilter("body");		
-		NodeList list = parser.parse(filter);
-		Node node = list.elementAt(0);
-		if (node instanceof BodyTag) {
-			BodyTag bodyTag = (BodyTag) node;
-			String body = bodyTag.getBody();
-			System.out.println(body + "\n");
-		}
-		*/
-
 		StringBean beanWord = new StringBean();
 		parser.visitAllNodesWith(beanWord);
 	
@@ -205,14 +200,19 @@ public class Spider {
 
 		while (st.hasMoreTokens()) {
 			String tokenNext = st.nextToken();
-			String tokenValue = tokenNext.replaceAll("[^A-Za-z]", "").toLowerCase();
-			
-			if (!tokenValue.equals("")) {
-				this.wordResults.add(tokenValue);
-				db.addEntry(DataManager.BODY_ID, tokenNext, url);		
 
-				//THIS IS WHERE YOU SEND DATA TO DATABASE!!
-				//System.out.println(tokenValue);
+			//splits tokens if words are separated by non alpha characters i.e. word.next splits into two strings --> word next
+			String[] tokenSplit = tokenNext.split("[^A-Za-z]");			
+			
+			for(int i = 0; i < tokenSplit.length; i++) {
+				String tokenValue = tokenSplit[i].replaceAll("[^A-Za-z]", "").toLowerCase();			
+				if (!tokenValue.equals("")) {
+					this.wordResults.add(tokenValue);
+					db.addEntry(DataManager.BODY_ID, tokenValue, url);	//sends data to database		
+				
+					//used to test data output	
+					//System.out.println(tokenValue);
+				}
 			}
 		}
 		return;
@@ -221,8 +221,7 @@ public class Spider {
 	
 	//Extracts all the links in a given URL
 	private void extractLinks(String url, DataManager db) throws ParserException, IOException {
-		//Here we shall extract the links to other pages and record
-		//them into the database :)
+		//Here we shall extract the links to other pages and record them into the database :)
 		
 		//Extracts links
 		LinkBean beanLinks = new LinkBean();
@@ -230,9 +229,9 @@ public class Spider {
 		URL[] urls = beanLinks.getLinks();
 		for (URL s : urls) {
 			this.linkResults.add(s.toString());
-			db.addEntry(DataManager.LINKS_ID, url, s.toString());
+			db.addEntry(DataManager.LINKS_ID, url, s.toString());	//sends data to database
 
-			//prints out links in the page
+			//prints out links in the page, used to test data output
 			//System.out.println(s.toString());
 		}
 
