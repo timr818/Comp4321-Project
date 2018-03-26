@@ -22,12 +22,7 @@ public class TestProgram {
 				bw.write(dm.getPageTitle(i) + "\n");
 				bw.write(dm.getURL(i) + "\n");
 				
-				if(dm.getPageSize(i).equals("0")){
-					bw.write(dm.getModifiedDate(i) + ", page size: unknown\n");
-				}
-				else {
-					bw.write(dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
-				}
+				bw.write("Last modified: " + dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
 
 				//print keywords
 				Vector<String> words = dm.getKeywordsAndFreq(i);
@@ -39,7 +34,7 @@ public class TestProgram {
 					}
 				}
 				
-				System.out.print("\n");	
+				bw.write("\n");	
 				//print links
 				Vector<Integer> pageIDs = dm.getLinks(i);
 				for (int pID : pageIDs) {

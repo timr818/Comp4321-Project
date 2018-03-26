@@ -439,7 +439,7 @@ public class DataManager {
 			}
 		}
 	
-		return "[ title is missing ]";
+		return "unknown title";
 	}
 	
 	public String getModifiedDate(int pageID) throws IOException {
@@ -452,7 +452,7 @@ public class DataManager {
 			}
 		}
 	
-		return "[ modified date is missing ]";
+		return "unknown";
 	}
 
 	public String getURL(int pageID) throws IOException {
