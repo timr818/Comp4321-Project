@@ -21,6 +21,7 @@ import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 import java.util.Vector;
 import java.util.HashMap;
+import java.util.Collections;
 import java.io.IOException;
 
 public class DataManager {
@@ -513,17 +514,17 @@ public class DataManager {
 		return result;
 	}
 
-	public Vector<String> getKeywordsAndFreq(int pageID) throws IOException {
+	public Vector<IdFreqPair> getKeywordsAndFreq(int pageID) throws IOException {
 		HTree hash = getHash(INDEX_ID);
 		String content = (String) hash.get(pageID);
-		Vector<String> result = new Vector<String>();
+		Vector<IdFreqPair> result = new Vector<IdFreqPair>();
 
 		if (content != null) {
 			String[] split = content.split(";");
 			for (int i = 0; i < split.length; i++) {
 				String[] a = split[i].split(":");
-				content = getWordFromID(Integer.parseInt(a[0])) + " " + a[1];
-				result.add(content);
+				IdFreqPair pair = new IdFreqPair(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
+				result.add(pair);
 			}
 		}
 
@@ -557,12 +558,57 @@ public class DataManager {
 		return docIDs;
 	}
 
-	public void querySimilarity(String[] queryWords) throws IOException {
-		Vector<Integer> relavantDocs = relevantDocuments(queryWords);
+	public Vector<Integer> querySimilarity(String[] queryWords) throws IOException {
+		Vector<Integer> result = new Vector<Integer>();
 
-		for (Integer a : relavantDocs) {
-			System.out.println(a);
+		Vector<Integer> relevantDocs = relevantDocuments(queryWords);
+		Vector<Integer> queryWordIDs = new Vector<Integer>();
+		for (int i = 0; i < queryWords.length; i++) {
+			queryWordIDs.add(getWordID(queryWords[i]));
 		}
+
+		Vector<Double> simularityScores = new Vector<Double>();
+
+		for (Integer currPageID : relevantDocs) {
+			Vector<IdFreqPair> terms = getKeywordsAndFreq(currPageID);
+
+			//inner product
+			int innerProduct = 0;
+			double pageMagnitude = 0;
+			for (IdFreqPair term : terms) {
+				if (queryWordIDs.contains(term.id)) {
+					innerProduct += term.freq;
+				}
+
+				pageMagnitude += term.freq * term.freq;
+			}
+			pageMagnitude = Math.sqrt(pageMagnitude);
+			double simularity = ((double) innerProduct / (pageMagnitude * Math.sqrt(queryWordIDs.size())));
+			simularityScores.add(simularity);
+		}
+
+		while (!simularityScores.isEmpty()) {
+			double max = 0;
+			int index = -1;
+
+			for (int i = 0; i < simularityScores.size(); i++) {
+				double d = simularityScores.elementAt(i);
+				if (d > max) {
+					max = d;
+					index = i;
+				}
+			}
+
+			result.add(relevantDocs.elementAt(index));
+			relevantDocs.remove(index);
+			simularityScores.remove(index);
+		}
+
+		//for (Integer v : result) {
+		//	System.out.println("p: " + v);
+		//}
+
+		return result;
 	}
 
 	public void printAll() throws IOException {
@@ -669,6 +715,21 @@ public class DataManager {
 			if (size >= maxPrint) {
 				break;
 			}
+		}
+	}
+
+	private class IdFreqPair {
+		public int id;
+		public int freq;
+
+		IdFreqPair() {
+			id = -1;
+			freq = -1;
+		}
+
+		IdFreqPair(int id, int freq) {
+			this.id = id;
+			this.freq = freq;
 		}
 	}
 }

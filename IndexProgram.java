@@ -15,6 +15,7 @@ public class IndexProgram {
 			Spider spider = new Spider();
 			DataManager dm = spider.search("http://www.cse.ust.hk/");
 
+			/*
 			FileWriter fw = new FileWriter(FILE_NAME);
 			BufferedWriter bw = new BufferedWriter(fw);
 
@@ -47,6 +48,7 @@ public class IndexProgram {
 			
 			bw.close();
 			fw.close();
+			*/
 			dm.finalize();
 		} catch (IOException e) {
 			System.err.println(e.toString());
