@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.Vector;
 
-public class TestProgram {
+public class IndexProgram {
 
 	private static final String FILE_NAME = "spider_result.txt";
 
-	TestProgram() {
+	IndexProgram() {
 
 	}
 	

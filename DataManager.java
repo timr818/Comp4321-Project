@@ -103,7 +103,7 @@ public class DataManager {
 				max = a;
 			}
 		}
-		currWordID = max;
+		currWordID = max + 1;
 
 		Integer b;
 		max = 0;
@@ -112,7 +112,7 @@ public class DataManager {
 				max = b;
 			}
 		}
-		currPageID = max;
+		currPageID = max + 1;
 	}
 
 	//initializes the hash tables
@@ -354,6 +354,22 @@ public class DataManager {
 
 		return result;
 	}
+
+	public Vector<String> getPagesAndFreq(int wordID) throws IOException {
+		Vector<String> result = new Vector<String>();
+		HTree hash = getHash(BODY_ID);
+		String content = (String) hash.get(wordID);
+
+		if (content != null) {
+			String[] split = content.split(";");
+		
+			for (String id : split) {
+				result.add(id);
+			}
+		}
+
+		return result;
+	}
 	
 	//get the pages (pageIDs) that this word appears as the title on
 	private Vector<Integer> getTitles(int wordID) throws IOException {
@@ -524,6 +540,31 @@ public class DataManager {
 		}
 	}
 
+	//returns all the documents that the words in the query appear in.
+	public Vector<Integer> relevantDocuments(String[] queryWords) throws IOException {
+		Vector<Integer> docIDs = new Vector<Integer>();
+		for (int i = 0; i < queryWords.length; i++) {
+			int wordID = getWordID(queryWords[i]);
+			Vector<Integer> pages = getPages(wordID);
+			
+			for (Integer a : pages) {
+				if (!docIDs.contains(a)) {
+					docIDs.add(a);
+				}
+			}
+		}
+
+		return docIDs;
+	}
+
+	public void querySimilarity(String[] queryWords) throws IOException {
+		Vector<Integer> relavantDocs = relevantDocuments(queryWords);
+
+		for (Integer a : relavantDocs) {
+			System.out.println(a);
+		}
+	}
+
 	public void printAll() throws IOException {
 		FastIterator iter1 = pagebodyHash.keys();
 		FastIterator iter2 = pagetitleHash.keys();
@@ -631,3 +672,5 @@ public class DataManager {
 		}
 	}
 }
+
+
