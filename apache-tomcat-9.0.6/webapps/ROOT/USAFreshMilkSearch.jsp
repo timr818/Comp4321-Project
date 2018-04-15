@@ -2,6 +2,13 @@
         out.println("The words you entered are: <br>");
         String arr = request.getParameter("words");
         String[] a = arr.split(" ");
-        for(int i = 0; i < a.length; i++)
-                out.println(a[i] + "<br>");
+
+	Vector<Integer> pageIDList = new Vector<Integer>();
+	
+        DataManager dm = new DataManager();
+	pageIDList = dm.querySimilarity(a);
+	
+	for(int i = 0; i < pageIDList.length; i++){
+		out.println(pageIDList[i] + "<br>");
+	}
 %>
