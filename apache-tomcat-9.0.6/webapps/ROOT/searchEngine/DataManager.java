@@ -21,6 +21,7 @@ import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 import java.util.Vector;
 import java.util.HashMap;
+import java.util.Collections;
 import java.io.IOException;
 
 public class DataManager {
@@ -103,7 +104,7 @@ public class DataManager {
 				max = a;
 			}
 		}
-		currWordID = max;
+		currWordID = max + 1;
 
 		Integer b;
 		max = 0;
@@ -112,7 +113,7 @@ public class DataManager {
 				max = b;
 			}
 		}
-		currPageID = max;
+		currPageID = max + 1;
 	}
 
 	//initializes the hash tables
@@ -354,6 +355,22 @@ public class DataManager {
 
 		return result;
 	}
+
+	public Vector<String> getPagesAndFreq(int wordID) throws IOException {
+		Vector<String> result = new Vector<String>();
+		HTree hash = getHash(BODY_ID);
+		String content = (String) hash.get(wordID);
+
+		if (content != null) {
+			String[] split = content.split(";");
+		
+			for (String id : split) {
+				result.add(id);
+			}
+		}
+
+		return result;
+	}
 	
 	//get the pages (pageIDs) that this word appears as the title on
 	private Vector<Integer> getTitles(int wordID) throws IOException {
@@ -497,17 +514,17 @@ public class DataManager {
 		return result;
 	}
 
-	public Vector<String> getKeywordsAndFreq(int pageID) throws IOException {
+	public Vector<IdFreqPair> getKeywordsAndFreq(int pageID) throws IOException {
 		HTree hash = getHash(INDEX_ID);
 		String content = (String) hash.get(pageID);
-		Vector<String> result = new Vector<String>();
+		Vector<IdFreqPair> result = new Vector<IdFreqPair>();
 
 		if (content != null) {
 			String[] split = content.split(";");
 			for (int i = 0; i < split.length; i++) {
 				String[] a = split[i].split(":");
-				content = getWordFromID(Integer.parseInt(a[0])) + " " + a[1];
-				result.add(content);
+				IdFreqPair pair = new IdFreqPair(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
+				result.add(pair);
 			}
 		}
 
@@ -522,6 +539,76 @@ public class DataManager {
 		} else {
 			return content;
 		}
+	}
+
+	//returns all the documents that the words in the query appear in.
+	public Vector<Integer> relevantDocuments(String[] queryWords) throws IOException {
+		Vector<Integer> docIDs = new Vector<Integer>();
+		for (int i = 0; i < queryWords.length; i++) {
+			int wordID = getWordID(queryWords[i]);
+			Vector<Integer> pages = getPages(wordID);
+			
+			for (Integer a : pages) {
+				if (!docIDs.contains(a)) {
+					docIDs.add(a);
+				}
+			}
+		}
+
+		return docIDs;
+	}
+
+	public Vector<Integer> querySimilarity(String[] queryWords) throws IOException {
+		Vector<Integer> result = new Vector<Integer>();
+
+		Vector<Integer> relevantDocs = relevantDocuments(queryWords);
+		Vector<Integer> queryWordIDs = new Vector<Integer>();
+		for (int i = 0; i < queryWords.length; i++) {
+			queryWordIDs.add(getWordID(queryWords[i]));
+		}
+
+		Vector<Double> simularityScores = new Vector<Double>();
+
+		for (Integer currPageID : relevantDocs) {
+			Vector<IdFreqPair> terms = getKeywordsAndFreq(currPageID);
+
+			//inner product
+			int innerProduct = 0;
+			double pageMagnitude = 0;
+			for (IdFreqPair term : terms) {
+				if (queryWordIDs.contains(term.id)) {
+					innerProduct += term.freq;
+				}
+
+				pageMagnitude += term.freq * term.freq;
+			}
+			pageMagnitude = Math.sqrt(pageMagnitude);
+			double simularity = ((double) innerProduct / (pageMagnitude * Math.sqrt(queryWordIDs.size())));
+			simularityScores.add(simularity);
+		}
+
+		while (!simularityScores.isEmpty()) {
+			double max = 0;
+			int index = -1;
+
+			for (int i = 0; i < simularityScores.size(); i++) {
+				double d = simularityScores.elementAt(i);
+				if (d > max) {
+					max = d;
+					index = i;
+				}
+			}
+
+			result.add(relevantDocs.elementAt(index));
+			relevantDocs.remove(index);
+			simularityScores.remove(index);
+		}
+
+		//for (Integer v : result) {
+		//	System.out.println("p: " + v);
+		//}
+
+		return result;
 	}
 
 	public void printAll() throws IOException {
@@ -630,4 +717,21 @@ public class DataManager {
 			}
 		}
 	}
+
+	private class IdFreqPair {
+		public int id;
+		public int freq;
+
+		IdFreqPair() {
+			id = -1;
+			freq = -1;
+		}
+
+		IdFreqPair(int id, int freq) {
+			this.id = id;
+			this.freq = freq;
+		}
+	}
 }
+
+
