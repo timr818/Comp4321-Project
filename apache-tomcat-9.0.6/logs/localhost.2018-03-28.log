@@ -1,0 +1,102 @@
+28-Mar-2018 12:09:37.902 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+28-Mar-2018 12:09:37.903 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+28-Mar-2018 12:09:37.905 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@36ebc363')
+28-Mar-2018 12:10:55.175 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+28-Mar-2018 12:10:55.175 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
+28-Mar-2018 12:22:37.135 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+28-Mar-2018 12:22:37.135 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+28-Mar-2018 12:22:37.137 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@36ebc363')
+28-Mar-2018 12:35:07.782 SEVERE [http-nio-8080-exec-5] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [jsp] in context with path [] threw exception [Unable to compile class for JSP: 
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token "+", ++ expected
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token "<", delete this token
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token ">", Expression expected after this token
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+Stacktrace:] with root cause
+ org.apache.jasper.JasperException: Unable to compile class for JSP: 
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token "+", ++ expected
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token "<", delete this token
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+An error occurred at line: [2] in the jsp file: [/lab4.jsp]
+Syntax error on token ">", Expression expected after this token
+1: <%
+2: 	out.println("The words you entered are:" + <br> + <br>);
+3: 	String arr = request.getParameter("words");
+4: 	String[] a = arr.split(" ");
+5: 	for(int i = 0; i < a.length; i++)
+
+
+Stacktrace:
+	at org.apache.jasper.compiler.DefaultErrorHandler.javacError(DefaultErrorHandler.java:103)
+	at org.apache.jasper.compiler.ErrorDispatcher.javacError(ErrorDispatcher.java:213)
+	at org.apache.jasper.compiler.JDTCompiler.generateClass(JDTCompiler.java:461)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:392)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:362)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:346)
+	at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:603)
+	at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:369)
+	at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+	at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:137)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:651)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:407)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:754)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1376)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+
