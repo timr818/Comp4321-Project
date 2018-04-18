@@ -1,0 +1,385 @@
+17-Apr-2018 17:17:40.199 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+17-Apr-2018 17:17:40.199 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+17-Apr-2018 17:17:40.200 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@5fe94a96')
+17-Apr-2018 17:17:40.280 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+17-Apr-2018 17:17:40.280 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
+17-Apr-2018 17:18:15.143 SEVERE [http-nio-8080-exec-5] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [jsp] in context with path [] threw exception [Unable to compile class for JSP: 
+
+An error occurred at line: [15] in the generated java file: [/home/amsaa/Comp4321-Project/apache-tomcat-9.0.6/work/Catalina/localhost/ROOT/org/apache/jsp/USAFreshMilkSearch_jsp.java]
+The import DataManager cannot be resolved
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:] with root cause
+ org.apache.jasper.JasperException: Unable to compile class for JSP: 
+
+An error occurred at line: [15] in the generated java file: [/home/amsaa/Comp4321-Project/apache-tomcat-9.0.6/work/Catalina/localhost/ROOT/org/apache/jsp/USAFreshMilkSearch_jsp.java]
+The import DataManager cannot be resolved
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:
+	at org.apache.jasper.compiler.DefaultErrorHandler.javacError(DefaultErrorHandler.java:103)
+	at org.apache.jasper.compiler.ErrorDispatcher.javacError(ErrorDispatcher.java:213)
+	at org.apache.jasper.compiler.JDTCompiler.generateClass(JDTCompiler.java:461)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:392)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:362)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:346)
+	at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:603)
+	at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:369)
+	at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+	at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:137)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:651)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:407)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:754)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1376)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+
+17-Apr-2018 17:20:57.333 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+17-Apr-2018 17:20:57.333 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
+17-Apr-2018 17:36:10.093 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+17-Apr-2018 17:36:10.093 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+17-Apr-2018 17:36:10.095 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@6771beb3')
+17-Apr-2018 17:36:21.897 SEVERE [http-nio-8080-exec-1] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [jsp] in context with path [] threw exception [Unable to compile class for JSP: 
+
+An error occurred at line: [15] in the generated java file: [/home/amsaa/Comp4321-Project/apache-tomcat-9.0.6/work/Catalina/localhost/ROOT/org/apache/jsp/USAFreshMilkSearch_jsp.java]
+The import DataManager cannot be resolved
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:] with root cause
+ org.apache.jasper.JasperException: Unable to compile class for JSP: 
+
+An error occurred at line: [15] in the generated java file: [/home/amsaa/Comp4321-Project/apache-tomcat-9.0.6/work/Catalina/localhost/ROOT/org/apache/jsp/USAFreshMilkSearch_jsp.java]
+The import DataManager cannot be resolved
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+DataManager cannot be resolved to a type
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:
+	at org.apache.jasper.compiler.DefaultErrorHandler.javacError(DefaultErrorHandler.java:103)
+	at org.apache.jasper.compiler.ErrorDispatcher.javacError(ErrorDispatcher.java:213)
+	at org.apache.jasper.compiler.JDTCompiler.generateClass(JDTCompiler.java:461)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:392)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:362)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:346)
+	at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:603)
+	at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:369)
+	at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+	at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:137)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:651)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:407)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:754)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1376)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+
+17-Apr-2018 17:36:59.454 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+17-Apr-2018 17:36:59.455 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
+17-Apr-2018 17:37:03.219 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+17-Apr-2018 17:37:03.219 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+17-Apr-2018 17:37:03.220 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@6771beb3')
+17-Apr-2018 17:37:10.969 SEVERE [http-nio-8080-exec-1] org.apache.catalina.core.StandardWrapperValve.invoke Servlet.service() for servlet [jsp] in context with path [] threw exception [Unable to compile class for JSP: 
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+The constructor DataManager() is not visible
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:] with root cause
+ org.apache.jasper.JasperException: Unable to compile class for JSP: 
+
+An error occurred at line: [9] in the jsp file: [/USAFreshMilkSearch.jsp]
+The constructor DataManager() is not visible
+6: 
+7: 	Vector<Integer> pageIDList = new Vector<Integer>();
+8: 	
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+
+
+An error occurred at line: [12] in the jsp file: [/USAFreshMilkSearch.jsp]
+Syntax error on token ",", . expected
+9:         DataManager dm = new DataManager();
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+An error occurred at line: [13] in the jsp file: [/USAFreshMilkSearch.jsp]
+The type of the expression must be an array type but it resolved to Vector<Integer>
+10: 	pageIDList = dm.querySimilarity(a);
+11: 	
+12: 	for(int i = 0; i < pageIDList,size(); i++){
+13: 		out.println(pageIDList[i] + "<br>");
+14: 	}
+15: %>
+
+
+Stacktrace:
+	at org.apache.jasper.compiler.DefaultErrorHandler.javacError(DefaultErrorHandler.java:103)
+	at org.apache.jasper.compiler.ErrorDispatcher.javacError(ErrorDispatcher.java:213)
+	at org.apache.jasper.compiler.JDTCompiler.generateClass(JDTCompiler.java:461)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:392)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:362)
+	at org.apache.jasper.compiler.Compiler.compile(Compiler.java:346)
+	at org.apache.jasper.JspCompilationContext.compile(JspCompilationContext.java:603)
+	at org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:369)
+	at org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:386)
+	at org.apache.jasper.servlet.JspServlet.service(JspServlet.java:330)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:494)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:137)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:651)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:407)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:754)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1376)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+
+17-Apr-2018 17:37:56.648 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+17-Apr-2018 17:37:56.648 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
