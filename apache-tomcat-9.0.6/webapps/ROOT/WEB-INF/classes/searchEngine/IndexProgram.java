@@ -14,8 +14,8 @@ public class IndexProgram {
 	public static void main (String[] args) {
 		
 		try {
-			Spider spider = new Spider();
-			DataManager dm = spider.search("http://www.cse.ust.hk/");
+			//Spider spider = new Spider();
+			//DataManager dm = spider.search("http://www.cse.ust.hk/");
 
 			/*
 			FileWriter fw = new FileWriter(FILE_NAME);
@@ -51,9 +51,23 @@ public class IndexProgram {
 			bw.close();
 			fw.close();
 			*/
-			dm.finalize();
+			//dm.finalize();
+			
+			//TEST IF DB IS PRESENT
+			Vector<Integer> intVector = new Vector<Integer>();
+			DataManager dm = new DataManager();
+			String word = "computer science";
+			String[] arr = word.split(" ");
+			intVector = dm.querySimilarity(arr);
+			System.out.println(intVector);
+
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
+	}
+	
+	public int add(int a, int b){
+		int c = a+b;
+		return c;
 	}
 }
