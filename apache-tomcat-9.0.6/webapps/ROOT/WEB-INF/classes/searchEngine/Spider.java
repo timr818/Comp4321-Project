@@ -89,15 +89,6 @@ public class Spider {
 
 
 
-
-	/**
-	* This performs all the work. It makes an HTTP request, checks the response, and then gathers
-	* up all the links on the page. Perform a searchForWord after the successful crawl
-	* 
-	* @param url
-	*            - The URL to visit
-	* @return whether or not the crawl was successful
-	*/
 	//Sifts through URL pages and sends it to the database
 	public void crawl(String url, DataManager db) {
 		//given the url, it will crawl it and recursively crawl on the pages that it links to
@@ -220,6 +211,9 @@ public class Spider {
 	
 		String contents = beanWord.getStrings();
 		StringTokenizer st = new StringTokenizer(contents);	
+	
+		//creates Stop Stem object to work with stemming the keyword
+		Porter porter = new Porter();
 
 		while (st.hasMoreTokens()) {
 			String tokenNext = st.nextToken();
@@ -230,10 +224,12 @@ public class Spider {
 			for(int i = 0; i < tokenSplit.length; i++) {
 				String tokenValue = tokenSplit[i].replaceAll("[^A-Za-z]", "").toLowerCase();	
 				if (!tokenValue.equals("") && !stopWords.contains(tokenValue)) {
-					this.wordResults.add(tokenValue);
-					db.addEntry(DataManager.BODY_ID, tokenValue, url);	//sends data to database		
+					String stemToken = "";
+					stemToken = porter.stripAffixes(tokenValue);
+					this.wordResults.add(stemToken);
+					db.addEntry(DataManager.BODY_ID, stemToken, url);	//sends data to database		
 				
-					//used to test data output	
+					//used to test data output
 					//System.out.println(tokenValue);
 				}
 			}

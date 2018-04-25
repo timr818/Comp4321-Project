@@ -14,60 +14,37 @@ public class IndexProgram {
 	public static void main (String[] args) {
 		
 		try {
-			//Spider spider = new Spider();
-			//DataManager dm = spider.search("http://www.cse.ust.hk/");
+			
+			Spider spider = new Spider();
+			DataManager dm = spider.search("http://www.cse.ust.hk/");
 
+			System.out.println("STARTING FINALIZE!");
+
+			dm.finalize();
+			
+			System.out.println("FINISHED FINALIZE!");	
+			
+			//dm.printAll(); DOESN'T WORK!
+			
+			
 			/*
-			FileWriter fw = new FileWriter(FILE_NAME);
-			BufferedWriter bw = new BufferedWriter(fw);
-
-			for (int i = 0; i < 30; i++) {
-				bw.write(dm.getPageTitle(i) + "\n");
-				bw.write(dm.getURL(i) + "\n");
-				
-				bw.write("Last modified: " + dm.getModifiedDate(i) + ", page size: " + dm.getPageSize(i) + "\n");
-
-				//print keywords
-				Vector<String> words = dm.getKeywordsAndFreq(i);
-				for (int j = 0; j < words.size(); j++) {
-					if (j != 0) {
-						bw.write("; " + words.get(j));
-					} else {
-						bw.write(words.get(j));
-					}
-				}
-				
-				bw.write("\n");	
-				//print links
-				Vector<Integer> pageIDs = dm.getLinks(i);
-				for (int pID : pageIDs) {
-					bw.write(dm.getURL(pID) + "\n");
-				}
-				bw.write("\n---------------\n\n");
-			}
-
-			//dm.printAll();
-			
-			bw.close();
-			fw.close();
-			*/
-			//dm.finalize();
-			
 			//TEST IF DB IS PRESENT
 			Vector<Integer> intVector = new Vector<Integer>();
 			DataManager dm = new DataManager();
+			Porter porter = new Porter();
 			String word = "computer science";
 			String[] arr = word.split(" ");
+			
+			for(int i = 0; i < arr.length; i++){
+				arr[i] = porter.stripAffixes(arr[i]);
+				System.out.println(arr[i]);
+			}
+
 			intVector = dm.querySimilarity(arr);
 			System.out.println(intVector);
-
+			*/
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
-	}
-	
-	public int add(int a, int b){
-		int c = a+b;
-		return c;
 	}
 }
