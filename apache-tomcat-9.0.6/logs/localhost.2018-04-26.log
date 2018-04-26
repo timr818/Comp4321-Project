@@ -932,3 +932,8 @@ Stacktrace:] with root cause
 
 26-Apr-2018 20:11:03.985 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
 26-Apr-2018 20:11:03.985 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()
+26-Apr-2018 20:54:24.147 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextInitialized()
+26-Apr-2018 20:54:24.147 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextInitialized()
+26-Apr-2018 20:54:24.148 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: attributeAdded('StockTicker', 'async.Stockticker@6771beb3')
+26-Apr-2018 20:55:03.972 INFO [main] org.apache.catalina.core.ApplicationContext.log SessionListener: contextDestroyed()
+26-Apr-2018 20:55:03.972 INFO [main] org.apache.catalina.core.ApplicationContext.log ContextListener: contextDestroyed()

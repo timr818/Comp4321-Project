@@ -16,6 +16,9 @@ import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 import java.util.Vector;
+
+import com.sun.crypto.provider.PBKDF2HmacSHA1Factory;
+
 import java.util.HashMap;
 import java.util.Collections;
 import java.io.IOException;
@@ -725,10 +728,14 @@ public class DataManager {
 			double pageMagnitude = 0;
 			for (IdFreqPair pageTerm : pageTerms) {
 				String pBody = (String) pagebodyHash.get(pageTerm.id);
-				int docFreq = 1;
-				if (pBody != null) {
-					docFreq = ((String) pagebodyHash.get(pageTerm.id)).split(";").length;
+				if (pBody == null) {
+					pBody = (String) pagetitleHash.get(pageTerm.id);
 				}
+				double docFreq = 1.0;
+				if (pBody != null) {
+					docFreq = pBody.split(";").length;
+				}
+				
 				int maxTf = maxTF(currPageID);
 
 				double titleMultiplier = 1.0;
@@ -766,12 +773,14 @@ public class DataManager {
 
 			for (int i = 0; i < similarityScores.size(); i++) {
 				double d = similarityScores.elementAt(i);
+				
 				if (d > max) {
 					max = d;
 					index = i;
 				}
 			}
 
+			//System.out.println(index + " for size: " + relevantDocs.size() + " " + similarityScores.size());
 			String resultContent = relevantDocs.elementAt(index) + ";" + similarityScores.elementAt(index);
 			result.add(resultContent);
 			relevantDocs.remove(index);

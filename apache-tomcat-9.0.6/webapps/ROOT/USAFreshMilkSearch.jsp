@@ -19,10 +19,12 @@
 
 	Porter porter = new Porter();
 	
+	/*	
 	for(int i = 0; i < a.length; i++){
 		a[i] = porter.stripAffixes(a[i]);
 		out.print(a[i]+ "<br>");//TO TEST
 	}
+	*/
 
 	Vector<String> pageIDList = new Vector<String>();
         DataManager dm = new DataManager();
