@@ -16,12 +16,12 @@ import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 import java.util.Vector;
-
-import com.sun.crypto.provider.PBKDF2HmacSHA1Factory;
+import java.util.Date;
 
 import java.util.HashMap;
 import java.util.Collections;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 public class DataManager {
 
@@ -618,7 +618,9 @@ public class DataManager {
 			}
 		}
 	
-		return "unknown";
+		Date d = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		return formatter.format(d);
 	}
 
 	public String getURL(int pageID) throws IOException {
@@ -637,14 +639,24 @@ public class DataManager {
 	public String getPageSize(int pageID) throws IOException {
 		HTree lookup = getHash(PAGES_ID);
 		String content = (String) lookup.get(pageID);
+		String result = null;
 		if (content != null) {
 			String[] split = content.split(";");
 			if (split.length > 3 && !split[3].equals("")) {
-				return split[3];
+				result = split[3];
+			}
+		}
+
+		if (result == null || result.equals("0")) {
+			String words = (String) indexHash.get(pageID);
+			if (words != null) {
+				result = Integer.toString(words.split(";").length * 4);
+			} else {
+				result = "missing";
 			}
 		}
 	
-		return "[ page size is missing ]";
+		return result;
 	}
 
 	public Vector<Integer> getKeywords(int pageID) throws IOException {

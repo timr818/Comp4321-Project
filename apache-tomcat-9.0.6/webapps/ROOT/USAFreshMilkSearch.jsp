@@ -18,20 +18,18 @@
         String[] a = arr.split(" ");
 
 	Porter porter = new Porter();
-	
-	/*	
+		
 	for(int i = 0; i < a.length; i++){
 		a[i] = porter.stripAffixes(a[i]);
-		out.print(a[i]+ "<br>");//TO TEST
+		//out.print(a[i]+ "<br>");//TO TEST
 	}
-	*/
 
 	Vector<String> pageIDList = new Vector<String>();
         DataManager dm = new DataManager();
 	pageIDList = dm.querySimilarity(a);
 
 	//TEST	
-	out.print(pageIDList.size()+"<br>");
+	//out.print(pageIDList.size()+"<br>");
 
 	String mostFreqWord = "";
 	String pageRankIDList = "";
@@ -40,10 +38,23 @@
 		String[] pageRankIDListArr = pageRankIDList.split(";");
 		int pageID = Integer.parseInt(pageRankIDListArr[0]);
 		
+		//prints out page rank (vector space model)
 		out.print(String.format("%.3f", Double.parseDouble(pageRankIDListArr[1])));
+		//prints out linked title
 		out.print("<a href = \"" + dm.getURL(pageID) + "\">");
 		out.print(dm.getPageTitle(pageID) + "</a><br>");
+		//prints out last mod date and size of page
+		out.print("Last modified date: " + dm.getModifiedDate(pageID) + ";Page Size: " + dm.getPageSize(pageID) + "<br>");
+		//print 5 most frequent words
 		mostFreqWord = dm.retrieveMostFreqKeywords(pageID);
-		out.print(mostFreqWord + "<br><br>");
+		out.print(mostFreqWord + "<br>");
+		//print child links
+		Vector<Integer> pageLinks = new Vector<Integer>();
+		pageLinks = dm.getLinks(pageID);
+		out.print("Child Links:<br>");
+		for(int k = 0; k < pageLinks.size(); k++){
+			out.print(dm.getURL(pageLinks.get(k)) + "<br>");
+		}
+		out.print("<br>");
 	}	
 %>
