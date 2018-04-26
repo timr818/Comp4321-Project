@@ -1,9 +1,4 @@
 /*
- * This file uses jdbm to manage a database of indexed webpages.
- */
-
-
-/*
  * NOTES FROM PROJECT REQUIREMENTS:
  * 1. The indexer first removes all stop words from the file (a dictionary of stop words will be provided)
  * 2. then transfroms words into stems using the Porter's algorithm
@@ -13,6 +8,7 @@
  * 	b. all stems extracted from the page title are inserted into another inverted file
  * 4. The indexes must be able to support phrase search such as "HONG KONG" in page titles and page bodies
  */
+
 package searchEngine;
 
 import jdbm.RecordManager;
@@ -36,6 +32,7 @@ public class DataManager {
 	private static final String WORDS_TO_ID = "w";
 	private static final String PAGES_ID = "pageIDs";
 	private static final String PAGES_TO_ID = "p";
+	private static final String MOST_FREQ_ID = "mfkeywords";
 
 	private RecordManager recordManager;
 	
@@ -59,6 +56,9 @@ public class DataManager {
 	//format: pageID -> url;pagetitle;last modified date;page size
 	private HTree pageIDs;
 	private HTree pageToIDHash;
+
+	//Hash to store the top five most frequent keywords
+	private HTree mostFreqHash;
 	
 	//The next ID number to give to the next unknown word or url
 	private int currWordID = 0;
@@ -75,6 +75,14 @@ public class DataManager {
 		createIndexTable(WORDS_TO_ID);
 		createIndexTable(PAGES_TO_ID);
 
+		String id = MOST_FREQ_ID;
+		long hashid = recordManager.getNamedObject(id);
+		if (hashid != 0) {
+			mostFreqHash = HTree.load(recordManager, hashid);
+		} else {
+			mostFreqHash = HTree.createInstance(recordManager);
+			recordManager.setNamedObject(id, mostFreqHash.getRecid());
+		}
 		Initialize();
 	}
 
@@ -169,8 +177,144 @@ public class DataManager {
 		}
 	}
 
+	private void calculateMostFrequentKeywords() throws IOException {
+		FastIterator iter = indexHash.keys();
+
+		Integer key;
+		while((key=(Integer)iter.next()) != null) {
+			String content = (String) indexHash.get(key);
+			String[] a = content.split(";");
+
+			Vector<IdFreqPair> topFreq = new Vector<IdFreqPair>();
+			int smallestTop = -1;
+
+			for (String element : a) {
+				String[] b = element.split(":");
+				Integer currFreq = Integer.parseInt(b[1]);
+				Integer currPageID = Integer.parseInt(b[0]);
+				boolean stop = false;
+
+				for (IdFreqPair pairs : topFreq) {
+					if (pairs.id == currPageID) {
+						stop = true;
+					}
+				}
+
+				/*
+					System.out.println();
+				System.out.println();
+				for (IdFreqPair h : topFreq) {
+						System.out.println("p: " + h.id + ", " + h.freq);
+					}
+					*/
+
+				IdFreqPair p = new IdFreqPair(currPageID, currFreq);
+				if (!stop) {
+					if (topFreq.size() == 0) {
+						topFreq.add(p);
+						smallestTop = currFreq;
+					} else if (topFreq.size() < 5) {
+						boolean added = false;
+						for (int i = 0; i < topFreq.size(); i++) {
+							IdFreqPair c = topFreq.elementAt(i);
+							
+							if (currFreq > c.id) {
+								topFreq.insertElementAt(p, i);
+								added = true;
+								break;
+							}
+						}
+
+						if (!added) {
+							topFreq.add(p);
+						}
+
+						if (currFreq < smallestTop) {
+							smallestTop = currFreq;
+						}
+					} else {
+						if (currFreq > smallestTop) {
+							for (int i = 0; i < topFreq.size(); i++) {
+								IdFreqPair c = topFreq.elementAt(i);
+								if (currFreq > c.id) {
+									topFreq.insertElementAt(p, i);
+									topFreq.removeElementAt(5);
+									smallestTop = topFreq.elementAt(4).freq;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			/*
+			System.out.println("in database:");
+			Vector<IdFreqPair> k = getKeywordsAndFreq(key);
+			for (IdFreqPair yu : k) {
+				System.out.println("id: " + yu.id + " | freq: " + yu.freq);
+			}
+
+			System.out.println(indexHash.get(key));
+			*/
+
+			Vector<IdFreqPair> result = new Vector<IdFreqPair>();
+			int sizet = topFreq.size();
+			while (result.size() < sizet) {
+				int maxFreq = 0;
+				int maxid = -1;
+				for (int k = 0; k < topFreq.size(); k++) {
+					IdFreqPair pairy = topFreq.elementAt(k);
+					if (pairy.freq > maxFreq) {
+						maxFreq = pairy.freq;
+						maxid = k;
+					}
+				}
+
+				result.add(topFreq.elementAt(maxid));
+				topFreq.removeElementAt(maxid);
+			}
+
+			String newContent = "";
+			for (int g = 0; g < result.size(); g++) {
+				IdFreqPair currP = result.elementAt(g);
+				if (g != 4) {
+					newContent += currP.id + ":" + currP.freq + ";";
+				} else {
+					newContent += currP.id + ":" + currP.freq;
+				}
+			}
+
+			mostFreqHash.put(key, newContent);
+		}
+	}
+
+	public String retrieveMostFreqKeywords(int pageID) throws IOException {
+		String returnString = "";
+		String content = (String) mostFreqHash.get(pageID);
+
+		String[] elements = content.split(";");
+		for (String e : elements) {
+			String[] a = e.split(":");
+			Integer currWordID = Integer.parseInt(a[0]);
+			Integer currFreq = Integer.parseInt(a[1]);
+
+			returnString += getWordFromID(currWordID) + " " + currFreq + ";";
+		}
+
+		return returnString.substring(0, returnString.length() - 1);
+	}
+
+	private int maxTF(int pageID) throws IOException {
+		String content = (String) mostFreqHash.get(pageID);
+		String[] s = content.split(";");
+		String[] a = s[0].split(":");
+		return Integer.parseInt(a[1]);
+	}
+
 	//finalizes the changes to the hashtables
 	public void finalize() throws IOException {
+		calculateMostFrequentKeywords();
 		recordManager.commit();
 		recordManager.close();
 	}
@@ -560,8 +704,8 @@ public class DataManager {
 		return docIDs;
 	}
 
-	public Vector<Integer> querySimilarity(String[] queryWords) throws IOException {
-		Vector<Integer> result = new Vector<Integer>();
+	public Vector<String> querySimilarity(String[] queryWords) throws IOException {
+		Vector<String> result = new Vector<String>();
 
 		Vector<Integer> relevantDocs = relevantDocuments(queryWords);
 		Vector<Integer> queryWordIDs = new Vector<Integer>();
@@ -569,46 +713,70 @@ public class DataManager {
 			queryWordIDs.add(getWordID(queryWords[i]));
 		}
 
-		Vector<Double> simularityScores = new Vector<Double>();
+		Vector<Double> similarityScores = new Vector<Double>();
 
 		for (Integer currPageID : relevantDocs) {
-			Vector<IdFreqPair> terms = getKeywordsAndFreq(currPageID);
+			Vector<IdFreqPair> pageTerms = getKeywordsAndFreq(currPageID);
 
-			//inner product
-			int innerProduct = 0;
+			Vector<Double> termWeights = new Vector<Double>();
+
+			double innerProduct = 0;
+			double queryMagnitude = 0;
 			double pageMagnitude = 0;
-			for (IdFreqPair term : terms) {
-				if (queryWordIDs.contains(term.id)) {
-					innerProduct += term.freq;
+			for (IdFreqPair pageTerm : pageTerms) {
+				String pBody = (String) pagebodyHash.get(pageTerm.id);
+				int docFreq = 1;
+				if (pBody != null) {
+					docFreq = ((String) pagebodyHash.get(pageTerm.id)).split(";").length;
 				}
+				int maxTf = maxTF(currPageID);
 
-				pageMagnitude += term.freq * term.freq;
+				double titleMultiplier = 1.0;
+				Vector<Integer> titlepages = getTitles(pageTerm.id);
+				if (titlepages.contains(currPageID)) {
+					titleMultiplier = 3.0;
+				}
+				
+				double weight = pageTerm.freq * titleMultiplier * (Math.log(300 / docFreq) / Math.log(2));
+				weight /= maxTf;
+				pageMagnitude += weight * weight;
+
+				if (queryWordIDs.contains(pageTerm.id)) {
+					double queryWeight = (Math.log(300 / docFreq) / Math.log(2));
+					queryMagnitude += queryWeight * queryWeight;
+				
+					innerProduct += weight * queryWeight;
+				}
+				
 			}
+
 			pageMagnitude = Math.sqrt(pageMagnitude);
-			double simularity = ((double) innerProduct / (pageMagnitude * Math.sqrt(queryWordIDs.size())));
-			simularityScores.add(simularity);
+			queryMagnitude = Math.sqrt(queryMagnitude);
+
+			double similarity = innerProduct / (pageMagnitude * queryMagnitude);
+
+			//System.out.println("in: " + innerProduct + " pm: " + pageMagnitude + "qm: " + queryMagnitude);
+			//System.out.println(similarity);
+			similarityScores.add(similarity);
 		}
 
-		while (!simularityScores.isEmpty()) {
+		while (!similarityScores.isEmpty() && result.size() < 50) {
 			double max = 0;
 			int index = -1;
 
-			for (int i = 0; i < simularityScores.size(); i++) {
-				double d = simularityScores.elementAt(i);
+			for (int i = 0; i < similarityScores.size(); i++) {
+				double d = similarityScores.elementAt(i);
 				if (d > max) {
 					max = d;
 					index = i;
 				}
 			}
 
-			result.add(relevantDocs.elementAt(index));
+			String resultContent = relevantDocs.elementAt(index) + ";" + similarityScores.elementAt(index);
+			result.add(resultContent);
 			relevantDocs.remove(index);
-			simularityScores.remove(index);
+			similarityScores.remove(index);
 		}
-
-		//for (Integer v : result) {
-		//	System.out.println("p: " + v);
-		//}
 
 		return result;
 	}
@@ -623,7 +791,7 @@ public class DataManager {
 		FastIterator iter7 = wordToIDHash.keys();
 		FastIterator iter8 = pageToIDHash.keys();
 
-		int maxPrint = 5;
+		int maxPrint = 4;
 
 		System.out.println("PAGE BODY INDEX");
 		Integer key;

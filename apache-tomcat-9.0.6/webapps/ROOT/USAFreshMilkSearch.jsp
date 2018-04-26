@@ -12,29 +12,36 @@
 </html>
 
 <%
-        out.println("The words you entered are: <br>");
         String arr = request.getParameter("words");
+	out.println("<br>Search results for: " + arr + "<br><br>");
+
         String[] a = arr.split(" ");
-	
-	//loop that stems the user input a into stemA
+
 	Porter porter = new Porter();
-	 
+	
 	for(int i = 0; i < a.length; i++){
 		a[i] = porter.stripAffixes(a[i]);
-		out.print(a[i]+ "<br>");
+		out.print(a[i]+ "<br>");//TO TEST
 	}
 
-	Vector<Integer> pageIDList = new Vector<Integer>();
+	Vector<String> pageIDList = new Vector<String>();
         DataManager dm = new DataManager();
 	pageIDList = dm.querySimilarity(a);
 
-	//TO TEST
-	out.println("<br>Ranked Pages:<br>");
-	
+	//TEST	
+	out.print(pageIDList.size()+"<br>");
+
+	String mostFreqWord = "";
+	String pageRankIDList = "";
 	for(int j = 0; j < pageIDList.size(); j++){
-		out.print("<a href = \"" + dm.getURL(pageIDList.get(j)) + "\">");
-		out.print(dm.getPageTitle(pageIDList.get(j)) + "</a><br>");
-		//out.println(pageIDList.get(j) + "<br>");
-	}
-	
+		pageRankIDList = pageIDList.get(j);
+		String[] pageRankIDListArr = pageRankIDList.split(";");
+		int pageID = Integer.parseInt(pageRankIDListArr[0]);
+		
+		out.print(String.format("%.3f", Double.parseDouble(pageRankIDListArr[1])));
+		out.print("<a href = \"" + dm.getURL(pageID) + "\">");
+		out.print(dm.getPageTitle(pageID) + "</a><br>");
+		mostFreqWord = dm.retrieveMostFreqKeywords(pageID);
+		out.print(mostFreqWord + "<br><br>");
+	}	
 %>

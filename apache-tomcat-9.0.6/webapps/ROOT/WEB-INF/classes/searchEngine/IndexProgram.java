@@ -17,14 +17,8 @@ public class IndexProgram {
 			
 			Spider spider = new Spider();
 			DataManager dm = spider.search("http://www.cse.ust.hk/");
-
-			System.out.println("STARTING FINALIZE!");
-
+			dm.printAll();
 			dm.finalize();
-			
-			System.out.println("FINISHED FINALIZE!");	
-			
-			//dm.printAll(); DOESN'T WORK!
 			
 			
 			/*

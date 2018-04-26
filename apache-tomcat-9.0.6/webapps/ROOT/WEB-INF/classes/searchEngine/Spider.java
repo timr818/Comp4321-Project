@@ -125,6 +125,10 @@ public class Spider {
 		while(this.pagesVisited.size() < MAX_PAGES_TO_SEARCH) {
 			String currentUrl;
 			Spider leg = new Spider();
+
+			if (this.pagesVisited.size() % 50 == 0) {
+				System.out.println("Crawled " + this.pagesVisited.size() + " pages.");
+			}
 			
 			if(this.pagesToVisit.isEmpty()) {
 				currentUrl = url;
@@ -133,7 +137,7 @@ public class Spider {
 			else {
 				currentUrl = this.nextUrl();
 			}
-			
+
 			leg.crawl(currentUrl, db); // Lots of stuff happening here. Look at the crawl method in Spider
 			this.pagesToVisit.addAll(leg.getLinks());
 		}
@@ -184,6 +188,24 @@ public class Spider {
                 	}
 			else {
 				dm.addMetaData(url, title, modDate, content.getContentLength());
+			}
+			
+			Porter porter = new Porter();
+			String[] titleTokens = title.split(" ");
+			for (String token : titleTokens) {
+				String[] tokenSplit = token.split("[^A-Za-z]");
+
+				for(int i = 0; i < tokenSplit.length; i++) {
+					String tokenValue = tokenSplit[i].replaceAll("[^A-Za-z]", "").toLowerCase();	
+					if (!tokenValue.equals("") && !stopWords.contains(tokenValue)) {
+						String stemToken = "";
+						stemToken = porter.stripAffixes(tokenValue);
+						dm.addEntry(DataManager.TITLE_ID, stemToken, url);	//sends data to database		
+					
+						//used to test data output
+						//System.out.println(tokenValue);
+					}
+				}
 			}
 		}
 		catch(Exception e) {
